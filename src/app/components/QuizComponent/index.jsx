@@ -2,36 +2,25 @@
 import  {questions} from "../../db/database"; //consome um array de obj com 5 questoes
 import styles from './quiz.module.scss';
 import { useEffect, useState } from "react";
+/*  
+ WHAT i DO?
+ * CRIAR O DB COM PELO MENOS 3 CAT CAD UMA COM ATÉ 50 QUESTÕES MINIMO COM IMG
+ * FAZENR COM QUE AS QUESTÕES E RESPOSTAS SEMPRE VENHAM EMBARALHADAS
+ * PODER ESCOLHER CATEGORIA DE PERGUNTAS E ENTRE 10, 25 OU 50 PERGUNTAS
+ * 
 
-
+*/
 export default function QuizApp() {
   let timer;
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState("");
-
   const [showAnswer, setShowAnswer] = useState(false);
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
-
   const [timeRemaining, setTimeRemaining] = useState(10);
   const [isTimeUp, setIsTimeUp] = useState(false);
-  console.log(showResults);
+  
   const question = questions[currentQuestion];
-  //contador regressivo.
-  // useEffect(() => {
-    
-  //   if (timeRemaining > 0) {
-  //     timer = setInterval(() => {
-  //       setTimeRemaining((prevTime) => prevTime - 1);
-  //       if (prevTime === 1) {
-  //         setIsTimeUp(true);
-  //         clearInterval(timer);
-  //       }
-  //     }, 1000);
-  //   }
-
-  //   return () => clearInterval(timer);
-  // }, [timeRemaining]);
 
   useEffect(() => {
     if (isTimeUp) {
@@ -39,6 +28,7 @@ export default function QuizApp() {
       setShowResults(true);
       return;
     }
+    
     if (timeRemaining > 0) {
       timer = setInterval(() => {
         setTimeRemaining((prevTime) => {
@@ -58,17 +48,43 @@ export default function QuizApp() {
   useEffect(() => {
     setTimeRemaining(10);
     setIsTimeUp(false);
+    
   }, [currentQuestion]);
 
   function handleOptionSelect(option) {
-    
     setSelectedOption(option);
     setShowAnswer(true);
-    if (option === question.answer) {
+    if (option === question?.answer) {
       setScore((prevScore) => prevScore + 1);
     }
     clearInterval(timer);
   }
+
+  /*testando nova implementação
+   const obterIndiceAleatorio = () => {
+      const perguntasNaoUtilizadas = questions.filter((_, index) => index !== currentQuestion);
+      const indiceAleatorio = Math.floor(Math.random() * perguntasNaoUtilizadas.length);
+      //setQuiz(questions[indiceAleatorio]);
+      setNq(perguntasNaoUtilizadas[indiceAleatorio])
+      return perguntasNaoUtilizadas[indiceAleatorio];
+    };
+
+  const handleNextClick = () => {
+    const novaPergunta = obterIndiceAleatorio();
+    setCurrentQuestion(novaPergunta);
+    setShowAnswer(false);
+    if (currentQuestion === questions.length - 1) {
+      setShowResults(true);
+      setCurrentQuestion(0);
+    }
+  };
+
+  useEffect(() => {
+    // Executar quando o componente for montado
+    const primeiraPergunta = obterIndiceAleatorio();
+    setCurrentQuestion(primeiraPergunta);
+  }, [currentQuestion]);
+  testando nova implementação*/
 
   function handleNextClick() {
     setCurrentQuestion((prevQn) => prevQn + 1);
@@ -100,22 +116,23 @@ export default function QuizApp() {
         </div>
         
       ) : (
+        
         <div className={styles.quizapp}>
           <div className={styles.quizheader}>
             <h2>Awesome Quiz Application</h2>
           </div>
           <div className={styles.quizbody}>
             <h1>
-              {question.id}. {question.question}
+              {question?.id}. {question?.question}
             </h1>
             <p>Time Remaining: {timeRemaining} seconds</p>
             <div className={styles.options}>
-              {question.options.map((option, i) => {
+              {question?.options.map((option, i) => {
                 return (
                   <button
-                    key={i}
+                    key={option}
                     className={
-                      showAnswer && option === question.answer
+                      showAnswer && option === question?.answer
                         ? styles.correctAnswer
                         : showAnswer && option === selectedOption
                         ? styles.wrongAnswer
@@ -132,14 +149,16 @@ export default function QuizApp() {
           </div>
           <div className={styles.quizfooter}>
             <p>
-              {currentQuestion + 1} out of {questions.length}
+              {currentQuestion + 1} out of {question?.length}
             </p>
             <button onClick={handleNextClick} className={styles.next}>
               Next
             </button>
           </div>
         </div>
+        
       )}
+
     </>
   );
 }
